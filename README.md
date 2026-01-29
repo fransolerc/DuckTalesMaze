@@ -80,4 +80,4 @@ Las contribuciones son bienvenidas. Por favor, abre un `issue` o envía un `pull
 
 ## Licencia
 
-Este proyecto está licenciado bajo la [Licencia MIT](LICENSE).
+Este proyecto está licenciado bajo la [Licencia MIT].

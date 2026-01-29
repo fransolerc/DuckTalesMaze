@@ -5,12 +5,8 @@ class Player:
         self.score = 0
 
     def move(self, direction, game_map):
-        """
-        Mueve al jugador si no hay una pared y el movimiento es válido.
-        """
         current_cell = game_map.list_cells[self.row][self.col]
 
-        # Comprobar si hay una pared en la dirección del movimiento
         if current_cell.walls[direction]:
             return False
 

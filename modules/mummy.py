@@ -7,9 +7,6 @@ class Mummy:
         self.vision_range = 4
 
     def move(self, game_map):
-        """
-        Mueve la momia y devuelve su estado actual ('chase' o 'patrol').
-        """
         player = game_map.player
         manhattan_distance = abs(self.row - player.row) + abs(self.col - player.col)
 
@@ -54,7 +51,6 @@ class Mummy:
                     break
 
     def _can_move(self, direction, game_map):
-        """Comprueba si hay una pared en la dirección dada."""
         current_cell = game_map.list_cells[self.row][self.col]
         return not current_cell.walls[direction]
 

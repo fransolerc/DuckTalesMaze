@@ -32,81 +32,116 @@ class GameMap:
 
     def setup_map(self):
         for _ in range(3):
-            self.place_hole()
-        self.place_element('treasure')
-        self.place_element('mummy')
+            self._place_hole()
+        self._place_treasure()
+        self._place_player()
+        self._place_mummy()
         for _ in range(5):
-            self.place_element('reward', 50)
-        self.place_element('player')
+            self._place_reward(50)
 
-    def place_hole(self):
-        free_cells = self.get_free_cells()
-        if not free_cells: return
-        row, col = random.choice(free_cells)
-        self.list_cells[row][col].is_hole = True
-        self.holes.append((row, col))
+    def _get_random_free_cell(self, avoid_slime=False):
+        free_cells = self.get_free_cells(avoid_slime=avoid_slime)
+        return random.choice(free_cells) if free_cells else None
+
+    def _place_slime_around(self, row, col):
         for r in range(row - 1, row + 2):
             for c in range(col - 1, col + 2):
                 if 0 <= r < 8 and 0 <= c < 8 and not self.list_cells[r][c].is_hole:
                     self.list_cells[r][c].has_slime = True
 
-    def place_element(self, tipo, valor=0):
+    def _place_hole(self):
+        pos = self._get_random_free_cell(avoid_slime=False)
+        if pos:
+            row, col = pos
+            self.list_cells[row][col].is_hole = True
+            self.holes.append(pos)
+            self._place_slime_around(row, col)
+
+    def _place_treasure(self):
+        pos = self._get_random_free_cell(avoid_slime=True)
+        if pos:
+            self.list_cells[pos[0]][pos[1]].has_treasure = True
+            self.treasure_pos = pos
+
+    def _place_mummy(self):
+        if not self.player:
+            return
+
+        min_distance = 4
         free_cells = self.get_free_cells(avoid_slime=True)
-        if not free_cells: return
-        row, col = random.choice(free_cells)
-        cell = self.list_cells[row][col]
-        if tipo == 'treasure':
-            cell.has_treasure = True
-            self.treasure_pos = (row, col)
-        elif tipo == 'mummy': self.mummy = Mummy(row, col)
-        elif tipo == 'reward': cell.reward_points = valor
-        elif tipo == 'player': self.player = Player(row, col)
+
+        far_cells = [
+            cell for cell in free_cells
+            if abs(cell[0] - self.player.row) + abs(cell[1] - self.player.col) >= min_distance
+        ]
+
+        pos = random.choice(far_cells) if far_cells else self._get_random_free_cell(avoid_slime=True)
+
+        if pos:
+            self.mummy = Mummy(pos[0], pos[1])
+
+    def _place_reward(self, value):
+        pos = self._get_random_free_cell(avoid_slime=True)
+        if pos:
+            self.list_cells[pos[0]][pos[1]].reward_points = value
+
+    def _place_player(self):
+        pos = self._get_random_free_cell(avoid_slime=True)
+        if pos:
+            self.player = Player(pos[0], pos[1])
 
     def get_free_cells(self, avoid_slime=False):
         occupied_pos = set(self.holes)
         if self.treasure_pos: occupied_pos.add(self.treasure_pos)
         if self.mummy: occupied_pos.add((self.mummy.row, self.mummy.col))
         if self.player: occupied_pos.add((self.player.row, self.player.col))
+
         free_cells = []
         for r in range(8):
             for c in range(8):
-                is_occupied = (r, c) in occupied_pos
-                cell = self.list_cells[r][c]
-                if not cell.is_hole and not is_occupied:
-                    if avoid_slime and cell.has_slime: continue
-                    free_cells.append((r, c))
+                if (r, c) in occupied_pos:
+                    continue
+                if avoid_slime and self.list_cells[r][c].has_slime:
+                    continue
+                free_cells.append((r, c))
         return free_cells
+
+    def _get_cell_color(self, cell, r, c):
+        if self.player and (r, c) == (self.player.row, self.player.col):
+            return COLOR_PLAYER
+        if self.mummy and (r, c) == (self.mummy.row, self.mummy.col):
+            return COLOR_MUMMY
+        if cell.has_treasure:
+            return COLOR_TREASURE
+        if cell.has_slime and cell.visited:
+            return COLOR_SLIME
+        if cell.visited:
+            return COLOR_VISITED
+        return (50, 50, 50)
+
+    def _draw_passages(self, screen, cell, x, y):
+        if not cell.walls['RIGHT']:
+            pygame.draw.circle(screen, COLOR_PASSAGE, (x + SIZE_CELL, y + SIZE_CELL / 2), 4)
+        if not cell.walls['DOWN']:
+            pygame.draw.circle(screen, COLOR_PASSAGE, (x + SIZE_CELL / 2, y + SIZE_CELL), 4)
+        if not cell.walls['LEFT']:
+            pygame.draw.circle(screen, COLOR_PASSAGE, (x, y + SIZE_CELL / 2), 4)
+        if not cell.walls['UP']:
+            pygame.draw.circle(screen, COLOR_PASSAGE, (x + SIZE_CELL / 2, y), 4)
 
     def draw_map(self, screen):
         for row_idx, row in enumerate(self.list_cells):
             for col_idx, cell in enumerate(row):
-                color = (50, 50, 50) # Color por defecto para celdas no visitadas
-
-                # El orden de las comprobaciones es importante aquí
-                if cell.has_treasure:
-                    color = COLOR_TREASURE
-                elif cell.has_slime: # El lodo es visible siempre si está presente
-                    color = COLOR_SLIME
-                elif cell.visited: # Celda visitada normal (no lodo, no tesoro)
-                    color = COLOR_VISITED
-                # Los agujeros se pintarán con el color que les corresponda (lodo, visitado o por defecto)
-
-                # El jugador y la momia se dibujan encima de otros colores
-                if self.mummy and (row_idx, col_idx) == (self.mummy.row, self.mummy.col):
-                    color = COLOR_MUMMY
                 if self.player and (row_idx, col_idx) == (self.player.row, self.player.col):
-                    color = COLOR_PLAYER
+                    cell.visit()
 
+                color = self._get_cell_color(cell, row_idx, col_idx)
                 x = MARGIN + col_idx * SIZE_CELL
                 y = MARGIN + row_idx * SIZE_CELL
 
                 pygame.draw.rect(screen, color, pygame.Rect(x, y, SIZE_CELL, SIZE_CELL))
                 pygame.draw.rect(screen, COLOR_BLACK, pygame.Rect(x, y, SIZE_CELL, SIZE_CELL), 10)
-
-                if not cell.walls['RIGHT']: pygame.draw.circle(screen, COLOR_PASSAGE, (x + SIZE_CELL, y + SIZE_CELL / 2), 4)
-                if not cell.walls['DOWN']: pygame.draw.circle(screen, COLOR_PASSAGE, (x + SIZE_CELL / 2, y + SIZE_CELL), 4)
-                if not cell.walls['LEFT']: pygame.draw.circle(screen, COLOR_PASSAGE, (x, y + SIZE_CELL / 2), 4)
-                if not cell.walls['UP']: pygame.draw.circle(screen, COLOR_PASSAGE, (x + SIZE_CELL / 2, y), 4)
+                self._draw_passages(screen, cell, x, y)
 
     def move_player(self, direction):
         if self.player.move(direction, self):
@@ -122,9 +157,10 @@ class GameMap:
 
     def is_valid_move(self, pos, entity_type='player'):
         row, col = pos
-        if not (0 <= row < 8 and 0 <= col < 8): return False
-        if entity_type == 'mummy':
-            if self.list_cells[row][col].is_hole: return False
+        if not (0 <= row < 8 and 0 <= col < 8):
+            return False
+        if entity_type == 'mummy' and self.list_cells[row][col].is_hole:
+            return False
         return True
 
     def check_victory(self):

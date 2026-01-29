@@ -7,17 +7,19 @@ class Cell:
         self.has_slime = False
         self.reward_points = reward_points
         self.visited = False
-
-        # Diccionario para almacenar las paredes. True significa que hay una pared.
         self.walls = {'UP': False, 'DOWN': False, 'LEFT': False, 'RIGHT': False}
 
     def __str__(self):
-        # ... (el resto del método __str__ no necesita cambios)
         if self.has_treasure:
             return 'T'
         elif self.is_hole:
             return 'O'
-        # ...
+        elif self.has_slime:
+            return 'S'
+        elif self.reward_points > 0:
+            return 'R'
+        else:
+            return ' '
 
     def visit(self):
         self.visited = True
