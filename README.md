@@ -1,83 +1,83 @@
 # DuckTales Maze
 
-DuckTales Maze es un juego de laberinto inspirado en el clásico de Amiga "DuckTales: The Quest for Gold". El jugador, encarnando a un intrépido explorador, debe navegar por un sistema de cuevas generado proceduralmente, recolectar gemas y encontrar el tesoro antes de que la antorcha se apague. Pero cuidado, una momia ancestral patrulla el laberinto, y caer en un agujero oculto significa el fin de la aventura.
+DuckTales Maze is a maze game inspired by the Amiga classic "DuckTales: The Quest for Gold". The player, embodying an intrepid explorer, must navigate a procedurally generated cave system, collect gems, and find the treasure before the torch goes out. But beware, an ancient mummy patrols the maze, and falling into a hidden hole means the end of the adventure.
 
-## Tabla de Contenidos
+## Table of Contents
 
-- [Descripción](#descripción)
-- [Características](#características)
-- [Requisitos](#requisitos)
-- [Instalación](#instalación)
-- [Uso](#uso)
-- [Estructura del Proyecto](#estructura-del-proyecto)
-- [Contribuciones](#contribuciones)
-- [Licencia](#licencia)
+- [Description](#description)
+- [Features](#features)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Project Structure](#project-structure)
+- [Contributions](#contributions)
+- [License](#license)
 
-## Descripción
+## Description
 
-En DuckTales Maze, el jugador explora un laberinto de 8x8 celdas. El objetivo principal es encontrar el tesoro oculto. Sin embargo, el tiempo es limitado por la duración de tu antorcha, y una momia errante te persigue si te acercas demasiado. El laberinto está lleno de trampas, como agujeros invisibles, aunque las celdas adyacentes con lodo te darán una pista del peligro. Recoge gemas para aumentar tu puntuación y demuestra tu habilidad para escapar de las profundidades de la cueva.
+In DuckTales Maze, the player explores an 8x8 cell maze. The main objective is to find the hidden treasure. However, time is limited by the duration of your torch, and a wandering mummy chases you if you get too close. The maze is full of traps, such as invisible holes, although adjacent cells with mud will give you a hint of the danger. Collect gems to increase your score and prove your skill in escaping the depths of the cave.
 
-## Características
+## Features
 
--   **Laberinto Dinámico**: Tablero de 8x8 celdas con paredes generadas proceduralmente, haciendo cada partida única.
--   **Momia Enemiga**: Una momia con inteligencia artificial que patrulla el laberinto y te persigue si entras en su rango de visión, ajustando su velocidad según su estado.
--   **Agujeros Ocultos**: Trampas mortales invisibles, señalizadas por celdas adyacentes con lodo.
--   **Antorcha Limitada**: Un temporizador de antorcha que añade una capa de urgencia; si se apaga, pierdes.
--   **Gemas y Puntuación**: Recolecta gemas (50$ cada una) dispersas por el laberinto para aumentar tu marcador.
--   **Tesoro Final**: Encuentra el tesoro para ganar la partida.
--   **Interfaz Gráfica Retro**: Utiliza Pygame para una interfaz visual que evoca la estética de los juegos clásicos, con celdas separadas por un "gap" y pasajes marcados.
--   **Condiciones de Derrota**: Pierdes si la momia te atrapa, caes en un agujero o tu antorcha se apaga.
+-   **Dynamic Maze**: 8x8 cell board with procedurally generated walls, making every game unique.
+-   **Enemy Mummy**: An AI-controlled mummy that patrols the maze and chases you if you enter its line of sight, adjusting its speed based on its state.
+-   **Hidden Holes**: Invisible deadly traps, signaled by adjacent cells with mud.
+-   **Limited Torch**: A torch timer that adds a layer of urgency; if it goes out, you lose.
+-   **Gems and Scoring**: Collect gems ($50 each) scattered throughout the maze to increase your score.
+-   **Final Treasure**: Find the treasure to win the game.
+-   **Retro GUI**: Uses Pygame for a visual interface that evokes the aesthetic of classic games, with cells separated by a "gap" and marked passages.
+-   **Defeat Conditions**: You lose if the mummy catches you, you fall into a hole, or your torch goes out.
 
-## Requisitos
+## Requirements
 
--   Python 3.x (se recomienda Python 3.11 o 3.12 para evitar problemas de instalación de Pygame)
+-   Python 3.x (Python 3.11 or 3.12 is recommended to avoid Pygame installation issues)
 -   Pygame
 
-## Instalación
+## Installation
 
-1.  Clona el repositorio:
+1.  Clone the repository:
 
     ```bash
     git clone https://github.com/fransolerc/duckTales-maze.git
     ```
 
-2.  Navega al directorio del proyecto:
+2.  Navigate to the project directory:
 
     ```bash
     cd duckTales-maze
     ```
 
-3.  Instala las dependencias:
+3.  Install dependencies:
 
     ```bash
     pip install pygame
     ```
 
-## Uso
+## Usage
 
-1.  Ejecuta el juego:
+1.  Run the game:
 
     ```bash
     python main.py
     ```
 
-2.  Usa las teclas de dirección (`UP`, `DOWN`, `LEFT`, `RIGHT`) para mover a tu personaje a través del laberinto.
-3.  **Objetivo**: Encuentra el tesoro antes de que la antorcha se apague, evitando a la momia y los agujeros ocultos.
-4.  **Pistas**: Observa las celdas con lodo; indican la proximidad de un agujero.
+2.  Use the arrow keys (`UP`, `DOWN`, `LEFT`, `RIGHT`) to move your character through the maze.
+3.  **Objective**: Find the treasure before the torch goes out, avoiding the mummy and hidden holes.
+4.  **Hints**: Observe cells with mud; they indicate the proximity of a hole.
 
-## Estructura del Proyecto
+## Project Structure
 
--   `main.py`: Archivo principal que inicia el juego, maneja el bucle de eventos, el temporizador de la antorcha y la visualización de la puntuación.
--   `modules/gameMap.py`: Define la clase `GameMap` que gestiona la generación del laberinto (paredes, agujeros, lodo), la colocación de elementos, el dibujado del mapa y las condiciones de victoria/derrota.
--   `modules/cell.py`: Define la clase `Cell` que representa una celda individual del laberinto, incluyendo sus propiedades (tesoro, agujero, lodo, paredes, visitado).
--   `modules/player.py`: Define la clase `Player` que maneja la posición y puntuación del jugador, así como su lógica de movimiento.
--   `modules/mummy.py`: Define la clase `Mummy` que gestiona la posición de la momia y su inteligencia artificial (patrulla/persecución).
--   `modules/config.py`: Archivo de configuración que contiene parámetros como el tamaño de las celdas, márgenes y la paleta de colores del juego.
+-   `main.py`: Main file that starts the game, handles the event loop, torch timer, and score display.
+-   `modules/gameMap.py`: Defines the `GameMap` class that manages maze generation (walls, holes, mud), item placement, map drawing, and win/loss conditions.
+-   `modules/cell.py`: Defines the `Cell` class representing an individual maze cell, including its properties (treasure, hole, mud, walls, visited).
+-   `modules/player.py`: Defines the `Player` class handling player position, score, and movement logic.
+-   `modules/mummy.py`: Defines the `Mummy` class managing the mummy's position and AI (patrol/chase).
+-   `modules/config.py`: Configuration file containing parameters such as cell size, margins, and the game color palette.
 
-## Contribuciones
+## Contributions
 
-Las contribuciones son bienvenidas. Por favor, abre un `issue` o envía un `pull request` si deseas mejorar el proyecto.
+Contributions are welcome. Please open an `issue` or submit a `pull request` if you wish to improve the project.
 
-## Licencia
+## License
 
-Este proyecto está licenciado bajo la [Licencia MIT].
+This project is licensed under the [MIT License].
